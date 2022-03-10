@@ -31,7 +31,7 @@ import {
   hasErrorInUrl,
 } from "@okta/okta-auth-js";
 import oidcConfig from "@/config";
-import { formTransformer } from "@/formTransformer";
+import { formTransformer } from "@/services/formTransformer";
 
 // Import components
 import Menu from "@/components/Menu.vue";
