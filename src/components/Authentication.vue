@@ -1,76 +1,25 @@
 <template>
   <div class="authentication">
-    <button @click="startIdxFlow('authenticate')">Login</button>
-    <button @click="startIdxFlow('recoverPassword')">Recover Password</button>
-    <button @click="startIdxFlow('register')">Registration</button>
-    <button @click="handleLogoutOut" v-show="authState?.idToken">Logout</button>
-    <br />
-    <br />
-    <div class="form" v-show="transaction?.status !== 'CANCELED'">
-      <h3 v-show="meta?.flow">
-        {{ meta?.flow }} > {{ transaction?.nextStep?.name }}
-      </h3>
-      <br />
-      <form @submit.prevent="handleSubmit" v-if="!authState?.idToken">
-        <div
-          class="messages"
-          v-for="(message, index) in transaction.messages"
-          :key="index"
-          v-show="transaction.messages"
-        >
-          {{ message.message }}
-        </div>
-        <div v-show="text.value">{{ text }}</div>
-        <img v-show="image?.src" :src="image.src" />
-        <div v-show="select?.name">
-          <label>{{ select.label }}</label>
-          <select :name="select.name" @change="handleChange">
-            <option key="" value="">---</option>
-            <option
-              v-for="option in select.options"
-              :key="option.key"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
+    <Menu
+      @flow="startIdxFlow"
+      @logout="handleLogoutOut"
+      :authState="authState"
+    />
 
-        <div v-for="(input, index) in inputs" :key="index">
-          <label :name="input.name" :key="index" for="">{{
-            input.label
-          }}</label>
-          <input
-            :name="input.name"
-            :key="index"
-            :type="input.type"
-            :required="input.required"
-            v-model="inputValues[input.name]"
-          />
-        </div>
+    <Header :meta="meta" :transaction="transaction" />
+    <Form
+      :authState="authState"
+      :inputs="inputs"
+      :transaction="transaction"
+      @submit="handleSubmit"
+      :text="text"
+      :image="image"
+      :select="select"
+      @skip="handleSkip"
+      @cancel="handleCancel"
+    />
 
-        <br />
-        <br />
-        <button v-show="transaction?.canSkip" @click="handleSkip">Skip</button>
-        <button v-show="inputs" type="submit" value="Submit">Submit</button>
-        <button v-show="inputs" type="button" @click="handleCancel">
-          Cancel
-        </button>
-      </form>
-    </div>
-
-    <div v-show="authState?.idToken">
-      <h3>Profile</h3>
-      <p>
-        Welcome back, <strong>{{ authState?.idToken?.claims?.name }}</strong
-        >.
-      </p>
-    </div>
-
-    <div v-show="transaction?.status === 'CANCELED'">
-      <br />
-      Transaction has been canceled!
-    </div>
+    <Profile :authState="authState" />
   </div>
 </template>
 
@@ -83,6 +32,12 @@ import {
 } from "@okta/okta-auth-js";
 import oidcConfig from "@/config";
 import { formTransformer } from "@/formTransformer";
+
+// Import components
+import Menu from "@/components/Menu.vue";
+import Profile from "@/components/Profile.vue";
+import Header from "@/components/Header.vue";
+import Form from "@/components/Form.vue";
 
 function createOktaAuthInstance() {
   const { state, recoveryToken } = urlParamsToObject(window.location.search);
@@ -98,6 +53,12 @@ const oktaAuth = createOktaAuthInstance();
 
 export default {
   name: "Authentication",
+  components: {
+    Menu,
+    Profile,
+    Header,
+    Form,
+  },
   setup() {
     const parseFromUrl = async () => {
       try {
@@ -164,7 +125,6 @@ export default {
   data() {
     return {
       transaction: {},
-      inputValues: {},
       authState: null,
       meta: null,
       inputs: null,
@@ -190,14 +150,6 @@ export default {
         this.authState = authState;
       },
     },
-    inputValuesHandler: {
-      get() {
-        return this.inputValues;
-      },
-      set(inputValues) {
-        this.inputValues = inputValues;
-      },
-    },
   },
   methods: {
     async startIdxFlow(flowMethod) {
@@ -218,19 +170,16 @@ export default {
       this.text = text || {};
       this.image = image || {};
     },
-    async handleSubmit() {
-      const newTransaction = await oktaAuth.idx.proceed(this.inputValues);
+    async handleSubmit(inputValues) {
+      const newTransaction = await oktaAuth.idx.proceed(inputValues);
       this.transactionHandler = newTransaction;
-      this.inputValuesHandler = {};
+      inputValues = {};
       if (newTransaction.status === IdxStatus.SUCCESS) {
         oktaAuth.tokenManager.setTokens(newTransaction.tokens);
         this.authStateHandler = newTransaction.tokens;
       } else if (newTransaction.status === IdxStatus.PENDING) {
         this.formHandling();
       }
-    },
-    handleChange(event) {
-      this.inputValues = { authenticator: event.target.value };
     },
     async handleLogoutOut() {
       await oktaAuth.signOut();
@@ -248,9 +197,6 @@ export default {
 </script>
 
 <style>
-.messages {
-  color: red;
-}
 button {
   background-color: #fff; /* Green */
   border: 2px solid #41b883;
@@ -267,14 +213,5 @@ button {
 button:hover {
   background-color: #41b883;
   color: white;
-}
-input {
-  padding: 8px 16px;
-  margin: 8px 0;
-  box-sizing: border-box;
-}
-label {
-  width: 100px;
-  margin-right: 15px;
 }
 </style>
