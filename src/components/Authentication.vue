@@ -11,10 +11,10 @@
       :authState="authState"
       :inputs="inputs"
       :transaction="transaction"
-      @submit="handleSubmit"
       :text="text"
       :image="image"
       :select="select"
+      @submit="handleSubmit"
       @skip="handleSkip"
       @cancel="handleCancel"
     />
