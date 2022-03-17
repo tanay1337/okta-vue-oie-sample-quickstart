@@ -70,7 +70,7 @@ export default {
     };
 
     const updateAuthState = function (authState) {
-      this.authStateHandler = authState;
+      this.authState = authState;
     };
 
     oktaAuth.authStateManager.subscribe(updateAuthState);
@@ -83,8 +83,8 @@ export default {
           "error_description"
         )}`
       );
-      this.authStateHandler({ isAuthenticated: false });
-      this.transactionHandler = {
+      this.authState({ isAuthenticated: false });
+      this.transaction = {
         status: IdxStatus.FAILURE,
         error,
       };
@@ -98,9 +98,9 @@ export default {
         const newTransaction = await oktaAuth.idx.handleEmailVerifyCallback(
           window.location.search
         );
-        this.transactionHandler = newTransaction;
+        this.transaction = newTransaction;
       } catch (error) {
-        this.transactionHandler = {
+        this.transaction = {
           status: IdxStatus.FAILURE,
           error,
         };
@@ -115,7 +115,7 @@ export default {
 
     const resumeTransaction = async () => {
       const newTransaction = await oktaAuth.idx.proceed();
-      this.transactionHandler = newTransaction;
+      this.transaction = newTransaction;
     };
 
     if (oktaAuth.idx.canProceed()) {
@@ -133,30 +133,12 @@ export default {
       image: {},
     };
   },
-  computed: {
-    transactionHandler: {
-      get() {
-        return this.transaction;
-      },
-      set(transaction) {
-        this.transaction = transaction;
-      },
-    },
-    authStateHandler: {
-      get() {
-        return this.authState;
-      },
-      set(authState) {
-        this.authState = authState;
-      },
-    },
-  },
   methods: {
     async startIdxFlow(flowMethod) {
       const newTransaction = await oktaAuth.idx[flowMethod]();
-      this.transactionHandler = newTransaction;
+      this.transaction = newTransaction;
       if (newTransaction.status === IdxStatus.SUCCESS) {
-        this.authStateHandler = newTransaction.tokens;
+        this.authState = newTransaction.tokens;
       } else {
         this.formHandling();
       }
@@ -172,11 +154,11 @@ export default {
     },
     async handleSubmit(inputValues) {
       const newTransaction = await oktaAuth.idx.proceed(inputValues);
-      this.transactionHandler = newTransaction;
+      this.transaction = newTransaction;
       inputValues = {};
       if (newTransaction.status === IdxStatus.SUCCESS) {
         oktaAuth.tokenManager.setTokens(newTransaction.tokens);
-        this.authStateHandler = newTransaction.tokens;
+        this.authState = newTransaction.tokens;
       } else if (newTransaction.status === IdxStatus.PENDING) {
         this.formHandling();
       }
@@ -186,11 +168,11 @@ export default {
     },
     async handleCancel() {
       const newTransaction = await oktaAuth.idx.cancel();
-      this.transactionHandler = newTransaction;
+      this.transaction = newTransaction;
     },
     async handleSkip() {
       const newTransaction = await oktaAuth.idx.proceed({ skip: true });
-      this.transactionHandler = newTransaction;
+      this.transaction = newTransaction;
     },
   },
 };
