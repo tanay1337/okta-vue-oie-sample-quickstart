@@ -1,6 +1,12 @@
 # Okta Vue Application
 
-A sample Vue application that uses [Okta Auth JavaScript SDK](https://github.com/okta/okta-auth-js) for implementing login, password recovery, and registration functionalities.
+A sample Vue application that uses [Okta Auth JavaScript SDK](https://github.com/okta/okta-auth-js) for implementing login, password recovery, and registration functionalities. This app supports (tested):
+
+* Login with username/password
+* Login with username/password + Email code
+* Recover password
+* Registration with Google authenticator, email factor
+
 
 ## Getting started
 
