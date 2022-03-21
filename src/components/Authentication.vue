@@ -59,7 +59,7 @@ export default {
     Header,
     Form,
   },
-  setup() {
+  created() {
     const parseFromUrl = async () => {
       try {
         await oktaAuth.idx.handleInteractionCodeRedirect(window.location.href);
@@ -69,7 +69,7 @@ export default {
       }
     };
 
-    const updateAuthState = function (authState) {
+    const updateAuthState = (authState) => {
       this.authState = authState;
     };
 
@@ -83,7 +83,6 @@ export default {
           "error_description"
         )}`
       );
-      this.authState({ isAuthenticated: false });
       this.transaction = {
         status: IdxStatus.FAILURE,
         error,
@@ -106,6 +105,7 @@ export default {
         };
       } finally {
         this.$router.push("/");
+        oktaAuth.tokenManager.setTokens(this.transaction.tokens);
       }
     };
 

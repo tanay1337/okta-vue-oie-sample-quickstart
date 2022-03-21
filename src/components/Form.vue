@@ -74,7 +74,7 @@ export default {
       return this.$emit("cancel");
     },
     change(event) {
-      this.inputValues = { authenticator: event.target.value };
+      this.inputValues[event.target.name] = event.target.value;
     },
   },
 };
