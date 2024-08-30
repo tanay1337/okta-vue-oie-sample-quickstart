@@ -6,10 +6,10 @@ A sample Vue application that uses [Okta Auth JavaScript SDK](https://github.com
 * Login with username/password + Email code or Magic Link
 * Recover password
 * Registration with Google authenticator, security question, email factor
+* Okta Verify
 
 Not supported
 
-* Okta Verify
 * Social login
 
 ## Getting started
@@ -17,9 +17,43 @@ Not supported
 To install this example application, run the following commands:
 
 ```
-git clone https://github.com/tanay1337/vue-oie.git
-cd vue-oie
+git clone https://github.com/okta-samples/okta-vue-oie-sample-quickstart.git
+cd okta-vue-oie-sample-quickstart
 ```
+
+Before running this sample, you will need an Okta Developer Account. Create one using `okta register`, or configure an existing one with `okta login`.
+
+### Create the Application in Okta
+
+1. Login to your Okta Admin dashboard, e.g. (https://my-account-admin.okta.com/admin/dashboard)
+2. Enable widget sign-in for your account
+   * Navigate to `Settings > Account > Embedded widget sign-in support`.
+   * Click `Edit`.
+   * Select `Interaction Code`.
+   * Click `Save`.
+2. Navigate to `Applications > Applications` in the left-hand menu.
+3. Click `Create App Integration`.
+4. For `Sign-in method` select `OIDC - OpenID Connect` and for `Application Type` select `Single-Page Application`. Click `Next`.
+5. Use the following values for application info:
+    * For `App integration name` use `okta-vue-oie-sample-quickstart`.
+    * Under `Grant type > Core grants` select `Authorization Code` and `Refresh Token`. Then click `Advanced` and select `Integration Code`.
+    * Under `Assignments > Controlled access` select `Allow everyone in your organization to access`.
+      * Leave `Enable immediate access with Federation Broker Mode` selected.
+    * Leave all other values as default.
+6. Verify the custom authorization server uses the `Integration Code` grant type:
+   * Navigate to `Security > API`.
+   * Under `Authorization Servers` locate the `default` server and click the `Edit` icon.
+   * Open the `Access Policies` tab, locate the `Default Policy Rule` rule, and click the `Edit` icon.
+   * Under `IF Grant type is` click `Advanced` and ensure `Interaction Code` is selected.
+     * If the `Interaction Code` checkbox does not appear, ensure you have enabled the `Interaciton Code` grant type in Step 2.
+   * Click `Update rule` to save.
+
+### Set the application config
+
+In your project open the file `src/config.js` and apply the following values:
+* Set `CLIENT_ID` to the value in your Okta admin application config at `General > Client Credentials > Client ID`.
+* Set `ISSUER` to `https://{yourOktaDomain}/oauth2/default`
+  * E.g. `https://my-account.okta.com/oauth2/default`
 
 ### Install dependencies and run the app
 
@@ -39,7 +73,6 @@ npm run test:unit
 ## Help
 
 Please post any questions as comments on our [Okta Developer Forums](https://devforum.okta.com/).
-
 
 ## License
 
