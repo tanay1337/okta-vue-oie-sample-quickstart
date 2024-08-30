@@ -31,22 +31,34 @@ Before running this sample, you will need an Okta Developer Account. Create one 
    * Click `Edit`.
    * Select `Interaction Code`.
    * Click `Save`.
-2. Navigate to `Applications > Applications` in the left-hand menu.
-3. Click `Create App Integration`.
-4. For `Sign-in method` select `OIDC - OpenID Connect` and for `Application Type` select `Single-Page Application`. Click `Next`.
-5. Use the following values for application info:
+3. Navigate to `Applications > Applications` in the left-hand menu.
+4. Click `Create App Integration`.
+5. For `Sign-in method` select `OIDC - OpenID Connect` and for `Application Type` select `Single-Page Application`. Click `Next`.
+6. Use the following values for application info:
     * For `App integration name` use `okta-vue-oie-sample-quickstart`.
     * Under `Grant type > Core grants` select `Authorization Code` and `Refresh Token`. Then click `Advanced` and select `Integration Code`.
     * Under `Assignments > Controlled access` select `Allow everyone in your organization to access`.
       * Leave `Enable immediate access with Federation Broker Mode` selected.
     * Leave all other values as default.
-6. Verify the custom authorization server uses the `Integration Code` grant type:
+7. Verify the custom authorization server uses the `Integration Code` grant type:
    * Navigate to `Security > API`.
    * Under `Authorization Servers` locate the `default` server and click the `Edit` icon.
    * Open the `Access Policies` tab, locate the `Default Policy Rule` rule, and click the `Edit` icon.
    * Under `IF Grant type is` click `Advanced` and ensure `Interaction Code` is selected.
      * If the `Interaction Code` checkbox does not appear, ensure you have enabled the `Interaciton Code` grant type in Step 2.
    * Click `Update rule` to save.
+8. Add the ability for users to register new accounts through your app.
+   * Navigate to `Security > Profile Enrollment`.
+   * Click `Add Profile Enrollment Policy`.
+   * For `Name` use `Okta Vue Self Service` and click `Save`.
+   * Click the `Edit` icon for the newly added policy.
+   * Ensure the following values:
+     * `Self-service registration: Allowed`.
+     * `Progressive Profiling: Enabled`.
+     * `Email verification: Required before access is granted`.
+   * Click `Manage apps`
+   * Click `Add an App to This Policy`
+   * Find this app (`okta-vue-oie-sample-quickstart`) and click `Apply`.
 
 ### Set the application config
 
