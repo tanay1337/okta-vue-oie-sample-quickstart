@@ -1,5 +1,5 @@
-const CLIENT_ID = "0oajbeeiqlFaGT1c05d7";
-const ISSUER = "https://dev-26142759.okta.com/oauth2/default";
+const CLIENT_ID = "{clientId}";
+const ISSUER = "https://{yourOktaDomain}.com/oauth2/default";
 const REDIRECT_URI = `${window.location.origin}/login/callback`;
 
 export default {
